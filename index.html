@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- favicon -->
+  <link rel="icon" type="image/png" sizes="64x64" href="assets/logo/Red-Canvas-Logo-FAVICON.png">
+
+  <title>Redcanvas - Under Construction</title>
+
+  <!-- Required SDK files -->
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 100%;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;
+      background: #fafafa;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* --- PRELOADER --- */
+    .preloader {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity .5s ease, visibility .5s ease;
+    }
+    .preloader.hide {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .preloader-logo {
+      width: 150px;
+      margin-bottom: 30px;
+      animation: pulse-scale 1s ease-in-out infinite;
+    }
+    @keyframes pulse-scale {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(.85); }
+    }
+
+    .loader-dots {
+      display: flex;
+      gap: 10px;
+    }
+    .loader-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: #EC1B41;
+      animation: bounce 1.4s ease-in-out infinite;
+    }
+    .loader-dot:nth-child(1){ animation-delay: -0.32s; }
+    .loader-dot:nth-child(2){ animation-delay: -0.16s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); opacity: .5; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Canvas */
+    .canvas-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Main content */
+    .content-wrapper {
+      width: 100%;
+      min-height: 100vh;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+      text-align: center;
+    }
+
+    .main-heading { font-size: 48px; font-weight: 600; color: #2d3748; margin-bottom: 20px; }
+    .subheading { font-size: 24px; font-weight: 400; color: #4a5568; margin-bottom: 50px; }
+
+    .services-title { font-size: 20px; font-weight: 600; color: #2d3748; margin-bottom: 20px; }
+
+    .services-container {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 50px;
+    }
+    .service-tag {
+      padding: 12px 24px;
+      border: 2px solid #070707;
+      border-radius: 20px;
+      background: white;
+      color: #2d3748;
+      font-size: 16px;
+      font-weight: 500;
+      transition: .3s ease;
+    }
+    .service-tag:hover {
+      background: #000;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .contact-section { font-size: 22px; font-weight: 600; }
+    .contact-email { font-size: 24px; font-weight: 700; color: #EC1B41; text-decoration: none; }
+    .contact-email:hover { text-decoration: underline; color: #000; }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- PRELOADER -->
+  <div class="preloader" id="preloader">
+    <img src="assets/logo/Red-Canvas-Logo-FAVICON.png" class="preloader-logo" alt="Loading">
+    <div class="loader-dots">
+      <div class="loader-dot"></div>
+      <div class="loader-dot"></div>
+      <div class="loader-dot"></div>
+    </div>
+  </div>
+
+  <canvas class="canvas-container" id="particleCanvas"></canvas>
+
+  <!-- CONTENT -->
+  <div class="content-wrapper">
+    <img src="assets/logo/Red-Canvas-Logo-1.png" style="width:300px;height:auto;margin-bottom:30px" alt="Logo">
+
+    <h1 class="main-heading" id="mainHeading">Under Construction</h1>
+    <p class="subheading" id="subheading">We're updating our site to serve you better.</p>
+
+    <h2 class="services-title" id="servicesTitle">Our Services</h2>
+
+    <div class="services-container">
+      <div class="service-tag" id="serviceOne">Graphic Design</div>
+      <div class="service-tag" id="serviceTwo">Web Development</div>
+      <div class="service-tag" id="serviceThree">Corporate Gifts</div>
+    </div>
+
+    <div class="contact-section">
+      <span id="contactText">For enquiries, reach us at:</span>
+      <a id="emailLink" class="contact-email" href="mailto:design@redcanvas.co.za">design@redcanvas.co.za</a>
+    </div>
+  </div>
+
+  <!-- PARTICLES + SDK + PRELOADER FIX -->
+  <script>
+    /* --- Preloader --- */
+    window.addEventListener("load", () => {
+      const preloader = document.getElementById("preloader");
+      preloader.classList.add("hide");
+      setTimeout(() => preloader.remove(), 600);
+    });
+
+    /* --- Particle Canvas --- */
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    const particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = canvas.height + 50;
+        this.size = Math.random() * 40 + 20;
+        this.speed = Math.random() * 1.5 + 0.5;
+        this.opacity = 0;
+        this.fadeIn = true;
+      }
+      update() {
+        this.y -= this.speed;
+        if (this.fadeIn) {
+          this.opacity += 0.02;
+          if (this.opacity >= 0.6) this.fadeIn = false;
+        } else if (this.y < -50) {
+          this.opacity -= 0.02;
+        }
+        if (this.y < -100 || this.opacity <= 0) this.reset();
+      }
+      draw() {
+        const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
+        g.addColorStop(0, `rgba(255, 107, 107, ${this.opacity * 0.4})`);
+        g.addColorStop(1, `rgba(255, 107, 107, ${this.opacity * 0.1})`);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    for (let i = 0; i < 15; i++) particles.push(new Particle());
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    /* --- SDK CONFIG SYSTEM (cleaned as requested) --- */
+    const defaultConfig = {
+      main_heading: "Under Construction",
+      subheading: "We're updating our site to serve you better.",
+      services_title: "Our Service",
+      service_one: "Graphic Design",
+      service_two: "Web Development",
+      service_three: "Corporate Gifts",
+      contact_text: "For enquiries, reach us at:",
+      email_address: "design@redcanvas.co.za",
+      background_color: "#fafafa",
+      text_color: "#2d3748",
+      accent_color: "#ff6b6b",
+      font_family: "-apple-system",
+      font_size: 16
+    };
+
+    async function onConfigChange(config) {
+      const size = config.font_size || 16;
+      const font = config.font_family || "-apple-system";
+
+      document.body.style.background = config.background_color;
+
+      document.getElementById("mainHeading").textContent = config.main_heading;
+      document.getElementById("subheading").textContent = config.subheading;
+      document.getElementById("servicesTitle").textContent = config.services_title;
+
+      document.getElementById("serviceOne").textContent = config.service_one;
+      document.getElementById("serviceTwo").textContent = config.service_two;
+      document.getElementById("serviceThree").textContent = config.service_three;
+
+      document.getElementById("contactText").textContent = config.contact_text;
+
+      const email = document.getElementById("emailLink");
+      email.textContent = config.email_address;
+      email.href = `mailto:${config.email_address}`;
+      email.style.color = config.accent_color;
+
+      // Service tag styling
+      document.querySelectorAll(".service-tag").forEach(tag => {
+        tag.style.borderColor = config.accent_color;
+        tag.style.fontSize = `${size}px`;
+        tag.style.fontFamily = font;
+      });
+
+      // General text + font
+      document.querySelectorAll("*").forEach(el => {
+        el.style.fontFamily = font;
+      });
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities: config => ({
+          recolorables: [
+            {
+              get: () => config.background_color,
+              set: v => window.elementSdk.setConfig({ background_color: v })
+            },
+            {
+              get: () => config.text_color,
+              set: v => window.elementSdk.setConfig({ text_color: v })
+            },
+            {
+              get: () => config.accent_color,
+              set: v => window.elementSdk.setConfig({ accent_color: v })
+            }
+          ],
+          fontEditable: {
+            get: () => config.font_family,
+            set: v => window.elementSdk.setConfig({ font_family: v })
+          },
+          fontSizeable: {
+            get: () => config.font_size,
+            set: v => window.elementSdk.setConfig({ font_size: v })
+          }
+        }),
+        mapToEditPanelValues: config => new Map([
+          ["main_heading", config.main_heading],
+          ["subheading", config.subheading],
+          ["services_title", config.services_title],
+          ["service_one", config.service_one],
+          ["service_two", config.service_two],
+          ["service_three", config.service_three],
+          ["contact_text", config.contact_text],
+          ["email_address", config.email_address]
+        ])
+      });
+    }
+  </script>
+
+</body>
+</html>
